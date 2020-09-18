@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Skolmaten",
-    "version": "0.1",
+    "version": "1.0",
     "description": "Visar skolmaten direkt i din webbläsare",
     "icons": {
         "40": "icons/icon-40px.png",
