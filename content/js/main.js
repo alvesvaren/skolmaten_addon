@@ -1,6 +1,9 @@
 Date.prototype.getWeek = function () {
-    var onejan = new Date(this.getFullYear(), 0, 1);
-    return Math.ceil(((this - onejan) / 86400000 + onejan.getDay() + 1) / 7);
+    var d = new Date();
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
 };
 
 const weekDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
@@ -12,9 +15,7 @@ async function getData(offset) {
         return;
     }
     console.log(schoolId);
-    const url = `https://rss2html.evla03.repl.co/feed.json?url=https://skolmaten.se/${schoolId.toLowerCase()}/rss/weeks/?offset=${
-        offset || 0
-    }`;
+    const url = `https://rss2html.evla03.repl.co/feed.json?url=https://skolmaten.se/${schoolId.toLowerCase()}/rss/weeks/?offset=${offset || 0}`;
     const response = await fetch(url);
     const json = await response.json();
     schoolName = json.feed.title;
