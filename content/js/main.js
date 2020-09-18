@@ -1,9 +1,7 @@
 Date.prototype.getWeek = function () {
-    var d = new Date();
-    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-    var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+    this.setUTCDate(this.getUTCDate() + 4 - (this.getUTCDay() || 7));
+    var yearStart = new Date(Date.UTC(this.getUTCFullYear(), 0, 1));
+    return Math.ceil(((this - yearStart) / 86400000 + 1) / 7);
 };
 
 const weekDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
@@ -73,9 +71,13 @@ async function populateData(data, schoolName) {
 var offset = 0;
 
 function refreshData() {
-    getSchool().then((name) => {
-        document.querySelector("input#school-name").value = name;
-    });
+    getSchool()
+        .then((name) => {
+            document.querySelector("input#school-name").value = name;
+        })
+        .catch(() => {
+            document.querySelector("h1#school-title").textContent = "Ange ett skol-id";
+        });
     getData(offset).then((data) => {
         window.sessionStorage.setItem("cachedData", data);
         populateData(data[0], data[1]);
@@ -87,7 +89,9 @@ async function setSchool(name) {
 }
 
 async function getSchool() {
-    return (await browser.storage.sync.get("schoolName")).schoolName;
+    const schoolName = (await browser.storage.sync.get("schoolName")).schoolName;
+    if (schoolName) return schoolName;
+    return Promise.reject();
 }
 
 document.querySelector("#back").addEventListener("click", () => {
