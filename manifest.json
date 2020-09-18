@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+    "name": "Skolmaten",
+    "version": "0.1",
+    "description": "Visar skolmaten direkt i din webbläsare",
+    "icons": {
+        "40": "icons/icon-40px.png",
+        "48": "icons/icon-48px.png",
+        "80": "icons/icon-80px.png"
+    },
+
+    "browser_action": {
+        "default_icon": "icons/icon-40px.png",
+        "default_title": "Skolmaten",
+        "default_popup": "content/popup.html",
+        "browser_style": true
+    },
+
+    "permissions": ["storage", "webRequest"]
+}
