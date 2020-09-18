@@ -7,9 +7,9 @@ const weekDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag",
 
 async function getData(offset) {
     var schoolName = "Skola";
-    const url = `https://rss2html.evla03.repl.co/feed.json?url=https://skolmaten.se/${(
-        (await browser.storage.sync.get("schoolName")).schoolName || ""
-    ).toLowerCase()}/rss/weeks/?offset=${offset || 0}`;
+    const url = `https://rss2html.evla03.repl.co/feed.json?url=https://skolmaten.se/${((await getSchool()) || "").toLowerCase()}/rss/weeks/?offset=${
+        offset || 0
+    }`;
     const response = await fetch(url);
     const json = await response.json();
     schoolName = json.feed.title;
@@ -67,13 +67,21 @@ async function populateData(data, schoolName) {
 var offset = 0;
 
 function refreshData() {
-    browser.storage.sync.get("schoolName").then((data) => {
-        document.querySelector("input#school-name").value = data.schoolName;
+    getSchool().then((name) => {
+        document.querySelector("input#school-name").value = name;
     });
     getData(offset).then((data) => {
         window.sessionStorage.setItem("cachedData", data);
         populateData(data[0], data[1]);
     });
+}
+
+async function setSchool(name) {
+    return browser.storage.sync.set({ schoolName: name });
+}
+
+async function getSchool() {
+    return (await browser.storage.sync.get("schoolName")).schoolName;
 }
 
 document.querySelector("#back").addEventListener("click", () => {
@@ -87,8 +95,8 @@ document.querySelector("#forward").addEventListener("click", () => {
 
 document.querySelector("form#school-name-form").addEventListener("submit", (event) => {
     event.preventDefault();
-    browser.storage.sync.set({ schoolName: document.querySelector("input#school-name").value }).then(async () => {
-        alert(`Skola ändrad till ${(await browser.storage.sync.get("schoolName")).schoolName}`);
+    setSchool(document.querySelector("input#school-name").value).then(async () => {
+        alert(`Skola ändrad till ${await getSchool()}`);
         location.reload();
     });
 });
