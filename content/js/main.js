@@ -7,7 +7,12 @@ const weekDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag",
 
 async function getData(offset) {
     var schoolName = "Skola";
-    const url = `https://rss2html.evla03.repl.co/feed.json?url=https://skolmaten.se/${((await getSchool()) || "").toLowerCase()}/rss/weeks/?offset=${
+    const schoolId = await getSchool();
+    if (!schoolId || schoolId == "") {
+        return;
+    }
+    console.log(schoolId);
+    const url = `https://rss2html.evla03.repl.co/feed.json?url=https://skolmaten.se/${schoolId.toLowerCase()}/rss/weeks/?offset=${
         offset || 0
     }`;
     const response = await fetch(url);
