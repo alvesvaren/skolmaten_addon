@@ -12,7 +12,6 @@ async function getData(offset) {
     if (!schoolId || schoolId == "") {
         return;
     }
-    console.log(schoolId);
     const url = `https://rss2html.evla03.repl.co/feed.json?url=https://skolmaten.se/${schoolId.toLowerCase()}/rss/weeks/?offset=${offset || 0}`;
     const response = await fetch(url);
     const json = await response.json();
