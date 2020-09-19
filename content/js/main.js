@@ -56,7 +56,7 @@ async function populateData(data, schoolName) {
     document.querySelector("h2#displayed-week").textContent = `Vecka ${postWeek} ${postWeek == currentWeek ? "(denna veckan)" : ""}`;
 
     data.map((item, i) => {
-        sections[i].querySelector("div.data").innerHTML = item.dataHtml;
+        sections[i].querySelector("div.data").innerHTML = filterXSS(item.dataHtml);
         const dateDiv = sections[i].querySelector("div.date");
         dateDiv.innerHTML = "";
         const daySpan = document.createElement("span");
