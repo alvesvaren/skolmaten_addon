@@ -79,7 +79,6 @@ function refreshData() {
             document.querySelector("h1#school-title").textContent = "Ange ett skol-id";
         });
     getData(offset).then((data) => {
-        window.sessionStorage.setItem("cachedData", data);
         populateData(data[0], data[1]);
     });
 }
