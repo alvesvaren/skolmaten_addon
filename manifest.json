@@ -1,7 +1,8 @@
 {
     "manifest_version": 2,
     "name": "Skolmaten",
-    "version": "1.8",
+    "author": "Alve Svarén",
+    "version": "2.0",
     "description": "Visar skolmaten direkt i din webbläsare",
     "icons": {
         "16": "icons/icon-16px.png",
@@ -18,11 +19,15 @@
         "browser_style": true
     },
 
+    "background": {
+        "scripts": ["content/js/webextension_polyfill.js", "content/js/background.js"]
+    },
+
     "browser_specific_settings": {
         "gecko": {
             "id": "skolmaten@alve.dev"
         }
     },
 
-    "permissions": ["storage", "webRequest"]
+    "permissions": ["storage", "https://skolmaten.se/*"]
 }

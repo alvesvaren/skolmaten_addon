@@ -25,30 +25,6 @@ async function getSchool() {
     return Promise.reject();
 }
 
-async function getData(offset) {
-    var schoolName = "Skola";
-    const schoolId = await getSchool();
-    if (!schoolId || schoolId == "") {
-        return;
-    }
-
-    const url = `https://rss2html.evla03.repl.co/feed.json?url=https://skolmaten.se/${schoolId.toLowerCase()}/rss/weeks/?offset=${offset || 0}`;
-    const response = await fetch(url);
-
-    if (response.status >= 300 || response.status < 200) {
-        return;
-    }
-
-    const json = await response.json();
-    schoolName = json.feed.title || schoolName;
-    return [
-        json.entries.map((item) => {
-            return { dataHtml: item.summary, date: new Date(item.published) };
-        }),
-        schoolName,
-    ];
-}
-
 async function populateData(data, schoolName) {
     if (!data) {
         return;
@@ -68,11 +44,12 @@ async function populateData(data, schoolName) {
 
     const sections = document.querySelectorAll("section");
     document.querySelector("h1#school-title").textContent = schoolName;
-    const postWeek = data[0].date.getWeek();
+    const postWeek = new Date(data[0].date).getWeek();
     const currentWeek = new Date().getWeek();
     document.querySelector("h2#displayed-week").textContent = `Vecka ${postWeek} ${postWeek == currentWeek ? "(denna veckan)" : ""}`;
 
     data.forEach((item, i) => {
+        item.date = new Date(item.date);
         sections[i].querySelector("div.data").innerHTML = filterXSS(item.dataHtml);
         const dateDiv = sections[i].querySelector("div.date");
         dateDiv.innerHTML = "";
@@ -90,15 +67,11 @@ async function populateData(data, schoolName) {
 }
 
 function refreshData() {
-    getSchool()
-        .then((name) => {
-            document.querySelector("input#school-name").value = name;
-        })
-        .catch(() => {
-            document.querySelector("h1#school-title").textContent = "Ange ett skol-id";
+    getSchool().then((name) => {
+        browser.runtime.sendMessage({ type: "getData", schoolId: name, offset: offset }).then((data) => {
+            populateData(data[0], data[1]);
         });
-    getData(offset).then((data) => {
-        populateData(data[0], data[1]);
+        document.querySelector("input#school-name").value = name;
     });
 }
 
