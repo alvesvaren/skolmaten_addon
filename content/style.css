@@ -2,13 +2,31 @@
     font-family: 'Noto Sans', sans-serif;
 }
 
+body {
+    --foreground: black;
+    --background: white;
+    --border: gray;
+}
+
 html,
 body {
     font-size: 0.9em;
     min-height: 128px;
     min-width: 384px;
     margin: 0;
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
+    color: var(--foreground);
+    background-color: var(--background);
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    body {
+        --foreground: #bdc1c6;
+        --background: #202024;
+        --border: #434d5e;
+    }
 }
 
 h1 {
@@ -68,22 +86,35 @@ footer {
 
 footer * {
     height: 100%;
+    color: var(--foreground);
+    border-radius: 4px;
+
+}
+
+footer input,
+footer button {
+    border: 0px solid var(--border);
+    background-color: #0003;
 
 }
 
 footer input {
+    transition-duration: 250ms;
+    transition-property: border-color;
     width: 100%;
     margin: 0;
     flex: 1 0 auto;
     box-sizing: border-box;
     flex-grow: 1;
     text-align: center;
+    border: 2px solid var(--border);
 }
 
 footer button {
     width: max-content;
     flex-grow: 1;
     text-align: center;
+    cursor: pointer;
 }
 
 br {

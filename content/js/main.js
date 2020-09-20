@@ -8,6 +8,14 @@ Date.prototype.getWeek = function () {
 const weekDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
 var offset = 0;
 
+if (browser.theme) {
+    browser.theme.getCurrent().then((theme) => {
+        document.body.style.setProperty("--foreground", theme.colors.popup_text || "unset");
+        document.body.style.setProperty("--background", theme.colors.popup || "unset");
+        document.body.style.setProperty("--border", theme.colors.popup_border || "unset");
+    });
+}
+
 async function setSchool(name) {
     return browser.storage.sync.set({ schoolName: name });
 }
