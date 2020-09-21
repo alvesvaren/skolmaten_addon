@@ -1,7 +1,7 @@
 # Skolmaten-tillägg
 Ett chrome och firefox tillägg som visar skolmaten från skolmaten.se direkt i webbläsaren
 
-[Lägg till i Firefox](https://addons.mozilla.org/en-US/firefox/addon/skolmaten) (version 2.0 just nu)
+[Lägg till i Firefox](https://addons.mozilla.org/en-US/firefox/addon/skolmaten) (version 2.1 just nu)
 
 [Lägg till i Chrome](https://chrome.google.com/webstore/detail/ejapgcaikpopdmigljfpjcdkpdidgdpk) (version 1.0 just nu)
 
