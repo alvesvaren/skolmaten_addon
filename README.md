@@ -13,9 +13,10 @@ Eftersom att review-processen i chrome för addons är väldigt mycket långsamm
 
 - Gå till [skolmaten.se](https://skolmaten.se)
 - Hitta din skola
-- Kopiera ditt skolmaten-id från URLen
+- Kopiera ditt skolmaten-id från URLen  
   
   Exempelvis blir URLen `https://skolmaten.se/it-gymnasiet-goteborg/` till skolmaten-id:t `it-gymnasiet-goteborg`
-
+- Ange id:t i textrutan i mitten på popupen
+- Klicka på enter-tagenten
 
 > OBS! Detta är ett inofficellt tillägg och har inget att göra med https://skolmaten.se eller IST AB
