@@ -3,14 +3,14 @@ const domParser = new DOMParser();
 async function getData(schoolId, offset) {
     var schoolName = "Skola";
     if (!schoolId || schoolId == "") {
-        return;
+        return Promise.reject("Error: Det angivna idt är ogiltligt");
     }
 
     const url = `https://skolmaten.se/${schoolId.toLowerCase()}/rss/weeks/?offset=${offset || 0}`;
     const response = await fetch(url);
 
     if (response.status >= 300 || response.status < 200) {
-        return;
+        return Promise.reject("Error: " + response.status + response.statusText);
     }
 
     const dom = domParser.parseFromString(await response.text(), "text/xml");
@@ -26,6 +26,6 @@ async function getData(schoolId, offset) {
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "getData") {
-        return getData(message.schoolId, message.offset)
+        return getData(message.schoolId, message.offset);
     }
-})
+});

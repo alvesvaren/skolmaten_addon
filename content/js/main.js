@@ -26,11 +26,11 @@ async function getSchool() {
 }
 
 async function populateData(data, schoolName) {
-    if (!data) {
+    if (!data || !schoolName) {
         return;
     }
 
-    if (data.length <= 0) {
+    if (data.length < 1) {
         alert("Denna veckan finns inte");
         if (offset > 0) {
             offset--;
@@ -40,6 +40,7 @@ async function populateData(data, schoolName) {
             offset = 0;
         }
         refreshData();
+        return;
     }
 
     const sections = document.querySelectorAll("section");
@@ -67,12 +68,19 @@ async function populateData(data, schoolName) {
 }
 
 function refreshData() {
-    getSchool().then((name) => {
-        browser.runtime.sendMessage({ type: "getData", schoolId: name, offset: offset }).then((data) => {
-            populateData(data[0], data[1]);
+    getSchool()
+        .then((name) => {
+            browser.runtime.sendMessage({ type: "getData", schoolId: name, offset: offset }).then((message) => {
+                if (message && message.length == 2) {
+                    const [data, schoolName] = message;
+                    populateData(data, schoolName);
+                }
+            });
+            document.querySelector("input#school-name").value = name;
+        })
+        .catch((errorMsg) => {
+            alert(errorMsg);
         });
-        document.querySelector("input#school-name").value = name;
-    });
 }
 
 document.querySelector("#back").addEventListener("click", () => {
