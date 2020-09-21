@@ -22,7 +22,7 @@ async function setSchool(name) {
 async function getSchool() {
     const schoolName = (await browser.storage.sync.get("schoolName")).schoolName;
     if (schoolName) return schoolName;
-    return Promise.reject();
+    return Promise.reject("School name was not stored");
 }
 
 async function populateData(data, schoolName) {
@@ -75,11 +75,13 @@ function refreshData() {
                     const [data, schoolName] = message;
                     populateData(data, schoolName);
                 }
+            }).catch((errorMsg) => {
+                alert(errorMsg);
             });
             document.querySelector("input#school-name").value = name;
         })
         .catch((errorMsg) => {
-            alert(errorMsg);
+            document.querySelector("h1#school-title").textContent = "Ange skolmaten-id:";
         });
 }
 
