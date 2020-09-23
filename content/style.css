@@ -1,11 +1,14 @@
 * {
     font-family: 'Noto Sans', sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
+    user-select: none;
 }
 
-body {
-    --foreground: black;
-    --background: white;
-    --border: gray;
+code {
+    font-family: 'Source Code Pro', monospace;
+    background-color: #0003;
+    padding: 4px;
 }
 
 html,
@@ -14,11 +17,24 @@ body {
     min-height: 128px;
     min-width: 384px;
     margin: 0;
-    /* box-sizing: border-box; */
+    box-sizing: border-box;
     color: var(--foreground);
     background-color: var(--background);
-    scrollbar-width: thin;
-    scrollbar-color: gray transparent;
+}
+
+h1 {
+    margin: 0;
+    grid-area: ii;
+    word-wrap: break-word;
+}
+
+body {
+
+    --foreground: black;
+    --background: white;
+    --border: gray;
+
+    margin: 16px;
 }
 
 @media screen and (prefers-color-scheme: dark) {
@@ -29,17 +45,7 @@ body {
     }
 }
 
-h1 {
-    margin: 0;
-    grid-area: ii;
-    word-wrap: break-word;
-}
-
-body {
-    margin: 16px;
-}
-
-body>div {
+body main {
     display: grid;
     grid-template-rows: repeat(7, auto) 35px;
     width: 384px;
@@ -54,10 +60,14 @@ body>div {
         "ff";
 }
 
+main.hidden {
+    display: none;
+}
+
 section div.date {
     display: flex;
     flex-direction: column;
-    width: 70px;
+    min-width: 60px;
 }
 
 .weekday {
@@ -84,21 +94,22 @@ footer {
     gap: 16px;
 }
 
-footer * {
+button,
+input {
     height: 100%;
+    max-height: 35px;
     color: var(--foreground);
     border-radius: 4px;
-
 }
 
-footer input,
-footer button {
+input,
+button {
     border: 0px solid var(--border);
     background-color: #0003;
 
 }
 
-footer input {
+input {
     transition-duration: 250ms;
     transition-property: border-color;
     width: 100%;
@@ -110,13 +121,79 @@ footer input {
     border: 2px solid var(--border);
 }
 
-footer button {
+button {
     width: max-content;
     flex-grow: 1;
     text-align: center;
     cursor: pointer;
+    width: 100%;
 }
 
 br {
     margin: 0;
+}
+
+#school-overlay.visible {
+    display: grid;
+    grid: 35px auto min-content / auto;
+    background-color: var(--background);
+    /* max-height: 100%; */
+    height: 568px;
+    max-width: 384px;
+}
+
+#school-overlay {
+    display: none;
+}
+
+.school-overlay-top-bar {
+    display: grid;
+    grid: auto / auto 75px;
+    gap: 16px;
+    height: 35px;
+}
+
+#school-list {
+    overflow-y: scroll;
+    padding: 0;
+}
+
+#school-list li {
+    list-style: none;
+    padding: 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+#school-list li.dead {
+    cursor: unset;
+    font-weight: bold;
+}
+
+#school-list li:not(.dead)::after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid var(--foreground);
+    opacity: 0.1;
+    content: "";
+}
+
+#school-list li:not(.dead):hover {
+    background-color: #0003;
+    opacity: 0.95;
+}
+
+.current-school-container {
+    font-weight: bold;
+    text-align: center;
+    max-width: 100%;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+#current-school {
+    user-select: all;
+    word-wrap: break-word;
 }

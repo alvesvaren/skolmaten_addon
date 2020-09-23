@@ -1,3 +1,5 @@
+"use strict";
+
 Date.prototype.getWeek = function () {
     const d = new Date(this);
     d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
@@ -6,6 +8,7 @@ Date.prototype.getWeek = function () {
 };
 
 const weekDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
+var schools = [];
 var offset = 0;
 
 if (browser.theme) {
@@ -66,23 +69,71 @@ async function populateData(data, schoolName) {
         dateDiv.appendChild(dateSpan);
     });
 }
+/**
+ * 
+ * @param {Event} event 
+ */
+function handleSchoolListItemClicked(event) {
+    const id = event.target.getAttribute("data-id");
+    setSchool(id).then(() => {
+        document.querySelector("#current-school").textContent = id;
+        refreshData();
+    });
+}
+
+async function populateSchoolList(schools, currentId) {
+    const list = document.querySelector("#school-list");
+    list.innerHTML = "";
+    schools = schools.slice()
+    if (schools.length > 50) {
+        schools = schools.slice(0, 50);
+        schools.push({name: "Alla resultat visas inte, använd sökfältet", dead: true});
+    }
+    if (currentId && schools.length <= 0) {
+        schools.push({name: "Manuellt från sökfältet", district: currentId, id: currentId});
+    }
+    schools.forEach((school) => {
+        const item = document.createElement("li");
+        if (school.dead) {
+            item.textContent = `${school.name}`
+            item.classList.add("dead");
+        } else {
+            item.textContent = `${school.name} (${school.district})`;
+            item.setAttribute("data-id", school.id);
+            item.addEventListener("click", handleSchoolListItemClicked);
+        }
+        list.appendChild(item);
+    });
+
+    
+}
 
 function refreshData() {
     getSchool()
         .then((name) => {
-            browser.runtime.sendMessage({ type: "getData", schoolId: name, offset: offset }).then((message) => {
-                if (message && message.length == 2) {
-                    const [data, schoolName] = message;
-                    populateData(data, schoolName);
-                }
-            }).catch((errorMsg) => {
-                alert(errorMsg);
-            });
-            document.querySelector("input#school-name").value = name;
+            browser.runtime
+                .sendMessage({ type: "getData", schoolId: name, offset: offset })
+                .then((message) => {
+                    if (message && message.length == 2) {
+                        const [data, schoolName] = message;
+                        populateData(data, schoolName);
+                    }
+                })
+                .catch((errorMsg) => {
+                    alert(errorMsg);
+                });
+            document.querySelector("#current-school").textContent = name;
         })
         .catch((errorMsg) => {
-            document.querySelector("h1#school-title").textContent = "Ange skolmaten-id:";
+            console.warn(errorMsg);
+            document.querySelector("#current-school").textContent = "ej inställt";
+            document.querySelector("h1#school-title").textContent = "Välj skola";
         });
+    browser.runtime.sendMessage({ type: "getSchools" }).then((message) => {
+        schools = message;
+        document.querySelector("input#search-school").value = "";
+        populateSchoolList(schools);
+    });
 }
 
 document.querySelector("#back").addEventListener("click", () => {
@@ -94,12 +145,18 @@ document.querySelector("#forward").addEventListener("click", () => {
     refreshData();
 });
 
-document.querySelector("form#school-name-form").addEventListener("submit", (event) => {
-    event.preventDefault();
-    setSchool(document.querySelector("input#school-name").value).then(async () => {
-        alert(`Skola ändrad till ${await getSchool()}`);
-        location.reload();
-    });
+document.querySelector("#set-school").addEventListener("click", (event) => {
+    document.querySelector("#school-overlay").classList.add("visible");
+    document.querySelector("main").classList.add("hidden");
 });
+
+document.querySelector("#set-school-done").addEventListener("click", (event) => {
+    document.querySelector("#school-overlay").classList.remove("visible");
+    document.querySelector("main").classList.remove("hidden");
+});
+
+document.querySelector("input#search-school").addEventListener("input", (event) => {
+    populateSchoolList(schools.filter((school) => (school.name + school.id).toLowerCase().includes(event.target.value)), event.target.value);
+}, {capture: false});
 
 refreshData();

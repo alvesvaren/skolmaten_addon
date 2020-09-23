@@ -4,11 +4,12 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="style.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
     </head>
     <body>
-        <div>
+        <main>
             <h1 id="school-title">Laddar...</h1>
             <h2 id="displayed-week"></h2>
             <section>
@@ -32,13 +33,22 @@
                 <div class="data"></div>
             </section>
             <footer>
-                <button id="back">Förra</button>
-                <form id="school-name-form"><input id="school-name" title="Din skolas id syns i URLen på skolmaten.se" spellcheck="false" autocapitalize="false" type="text" placeholder="Skolmaten-id" /></form>
-                <button id="forward">Nästa</button>
+                <button id="back">Förra veckan</button>
+                <button id="set-school">Välj skola</button>
+                <button id="forward">Nästa vecka</button>
             </footer>
+        </main>
+        <div id="school-overlay">
+            <div class="school-overlay-top-bar"><input type="text" placeholder="Sök efter skola eller ange id" id="search-school" /><button id="set-school-done">Klar</button></div>
+            <ul id="school-list"></ul>
+            <div class="current-school-container">Valt skol-id: <code id="current-school"></code></div>
         </div>
-        <script src="js/webextension_polyfill.js"></script> <!-- https://github.com/mozilla/webextension-polyfill -->
-        <script src="js/xss.min.js"></script> <!-- https://github.com/leizongmin/js-xss -->
+        <script src="js/webextension_polyfill.js"></script>
+        <!-- https://github.com/mozilla/webextension-polyfill -->
+
+        <script src="js/xss.min.js"></script>
+        <!-- https://github.com/leizongmin/js-xss -->
+
         <script src="js/main.js"></script>
     </body>
 </html>
