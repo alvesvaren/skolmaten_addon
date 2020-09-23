@@ -148,6 +148,14 @@ document.querySelector("#forward").addEventListener("click", () => {
 document.querySelector("#set-school").addEventListener("click", (event) => {
     document.querySelector("#school-overlay").classList.add("visible");
     document.querySelector("main").classList.add("hidden");
+
+    if (schools.length <= 0) {
+        browser.runtime.sendMessage({ type: "getSchools" }).then((message) => {
+            schools = message;
+            document.querySelector("input#search-school").value = "";
+            populateSchoolList(schools);
+        });
+    }
 });
 
 document.querySelector("#set-school-done").addEventListener("click", (event) => {
