@@ -36,7 +36,7 @@ async function getSchools() {
     for (const province of json.provinces) {
         for (const district of province.districts) {
             for (const school of district.schools) {
-                schoolList.push({ id: school.url.replaceAll("/", ""), name: school.name, district: district.name });
+                schoolList.push({ id: school.url.slice(1,-1), name: school.name, district: district.name });
             }
         }
     }
