@@ -1,26 +1,25 @@
-const domParser = new DOMParser();
-
 async function getData(schoolId, offset) {
     var schoolName = "Skola";
     if (!schoolId || schoolId == "") {
         return Promise.reject("Error: Det angivna idt är ogiltligt");
     }
 
-    const url = `https://skolmaten.se/${schoolId.toLowerCase()}/rss/weeks/?offset=${offset || 0}`;
+    const url = `https://skolmaten.se/${schoolId.toLowerCase()}/?fmt=json&offset=${offset || 0}`;
     const response = await fetch(url);
 
     if (response.status >= 300 || response.status < 200) {
         return Promise.reject("Error " + response.status + ": " + response.statusText);
     }
 
-    const dom = domParser.parseFromString(await response.text(), "text/xml");
+    const json = await response.json();
 
-    schoolName = dom.querySelector("rss > channel > title").textContent || schoolName;
+    schoolName = json.school.name || schoolName;
     return [
-        Array.from(dom.querySelectorAll("rss item")).map((item) => {
-            return { dataHtml: item.querySelector("description").textContent, date: item.querySelector("pubDate").textContent };
+        json.weeks[0].days.map((item) => {
+            return { items: item.items, date: item.date, weekday: item.week_day };
         }),
         schoolName,
+        json.weeks[0].week,
     ];
 }
 
@@ -36,11 +35,11 @@ async function getSchools() {
     for (const province of json.provinces) {
         for (const district of province.districts) {
             for (const school of district.schools) {
-                schoolList.push({ id: school.url.slice(1,-1), name: school.name, district: district.name });
+                schoolList.push({ id: school.url.slice(1, -1), name: school.name, district: district.name });
             }
         }
     }
-    return schoolList.sort((a,b) => a.name > b.name ? 1 : -1);
+    return schoolList.sort((a, b) => (a.name > b.name ? 1 : -1));
 }
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {

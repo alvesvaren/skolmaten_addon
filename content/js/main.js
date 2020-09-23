@@ -28,7 +28,7 @@ async function getSchool() {
     return Promise.reject("School name was not stored");
 }
 
-async function populateData(data, schoolName) {
+async function populateData(data, schoolName, week) {
     if (!data || !schoolName) {
         return;
     }
@@ -48,30 +48,37 @@ async function populateData(data, schoolName) {
 
     const sections = document.querySelectorAll("section");
     document.querySelector("h1#school-title").textContent = schoolName;
-    const postWeek = new Date(data[0].date).getWeek();
     const currentWeek = new Date().getWeek();
-    document.querySelector("h2#displayed-week").textContent = `Vecka ${postWeek} ${postWeek == currentWeek ? "(denna veckan)" : ""}`;
+    document.querySelector("h2#displayed-week").textContent = `Vecka ${week} ${week == currentWeek ? "(denna veckan)" : ""}`;
 
     data.forEach((item, i) => {
-        item.date = new Date(item.date);
-        sections[i].querySelector("div.data").innerHTML = filterXSS(item.dataHtml);
+        const items = item.items.reduce((result, element, index, array) => {
+            result.push(element);
+            if (index < array.length - 1) {
+                result.push(document.createElement("br"));
+            }
+            return result;
+        }, []);
+        items.forEach((item) => {
+            sections[i].querySelector("div.data").appendChild(item);
+        });
         const dateDiv = sections[i].querySelector("div.date");
         dateDiv.innerHTML = "";
 
         const daySpan = document.createElement("span");
-        daySpan.textContent = weekDays[item.date.getDay() - 1];
+        daySpan.textContent = weekDays[item.weekday];
         daySpan.classList.add("weekday");
 
         const dateSpan = document.createElement("span");
-        dateSpan.textContent = `${item.date.getFullYear()}-${item.date.getMonth() + 1}-${item.date.getDate()}`;
+        dateSpan.textContent = item.date;
 
         dateDiv.appendChild(daySpan);
         dateDiv.appendChild(dateSpan);
     });
 }
 /**
- * 
- * @param {Event} event 
+ *
+ * @param {Event} event
  */
 function handleSchoolListItemClicked(event) {
     const id = event.target.getAttribute("data-id");
@@ -84,18 +91,18 @@ function handleSchoolListItemClicked(event) {
 async function populateSchoolList(schools, currentId) {
     const list = document.querySelector("#school-list");
     list.innerHTML = "";
-    schools = schools.slice()
+    schools = schools.slice();
     if (schools.length > 50) {
         schools = schools.slice(0, 50);
-        schools.push({name: "Alla resultat visas inte, använd sökfältet", dead: true});
+        schools.push({ name: "Alla resultat visas inte, använd sökfältet", dead: true });
     }
     if (currentId && schools.length <= 0) {
-        schools.push({name: "Manuellt från sökfältet", district: currentId, id: currentId});
+        schools.push({ name: "Manuellt från sökfältet", district: currentId, id: currentId });
     }
     schools.forEach((school) => {
         const item = document.createElement("li");
         if (school.dead) {
-            item.textContent = `${school.name}`
+            item.textContent = `${school.name}`;
             item.classList.add("dead");
         } else {
             item.textContent = `${school.name} (${school.district})`;
@@ -104,8 +111,6 @@ async function populateSchoolList(schools, currentId) {
         }
         list.appendChild(item);
     });
-
-    
 }
 
 function refreshData() {
@@ -115,8 +120,8 @@ function refreshData() {
                 .sendMessage({ type: "getData", schoolId: name, offset: offset })
                 .then((message) => {
                     if (message && message.length == 2) {
-                        const [data, schoolName] = message;
-                        populateData(data, schoolName);
+                        const [data, schoolName, week] = message;
+                        populateData(data, schoolName, week);
                     }
                 })
                 .catch((errorMsg) => {
@@ -129,11 +134,6 @@ function refreshData() {
             document.querySelector("#current-school").textContent = "ej inställt";
             document.querySelector("h1#school-title").textContent = "Välj skola";
         });
-    browser.runtime.sendMessage({ type: "getSchools" }).then((message) => {
-        schools = message;
-        document.querySelector("input#search-school").value = "";
-        populateSchoolList(schools);
-    });
 }
 
 document.querySelector("#back").addEventListener("click", () => {
@@ -155,8 +155,15 @@ document.querySelector("#set-school-done").addEventListener("click", (event) => 
     document.querySelector("main").classList.remove("hidden");
 });
 
-document.querySelector("input#search-school").addEventListener("input", (event) => {
-    populateSchoolList(schools.filter((school) => (school.name + school.id).toLowerCase().includes(event.target.value)), event.target.value);
-}, {capture: false});
+document.querySelector("input#search-school").addEventListener(
+    "input",
+    (event) => {
+        populateSchoolList(
+            schools.filter((school) => (school.name + school.id).toLowerCase().includes(event.target.value)),
+            event.target.value
+        );
+    },
+    { capture: false }
+);
 
 refreshData();
