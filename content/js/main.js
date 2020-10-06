@@ -18,7 +18,10 @@ if (browser.theme) {
         document.body.style.setProperty("--border", theme.colors.popup_border || "unset");
     });
 }
-
+/**
+ * Save the school to extension storage
+ * @param {string} name 
+ */
 async function setSchool(name) {
     return browser.storage.sync.set({ schoolName: name });
 }
@@ -28,6 +31,11 @@ async function getSchool() {
     return Promise.reject("School name was not stored");
 }
 
+/**
+ * Fill the DOM with the relevant data
+ * @param {any[]} data 
+ * @param {string} schoolName 
+ */
 async function populateData(data, schoolName) {
     if (!data || !schoolName) {
         return;
@@ -70,7 +78,7 @@ async function populateData(data, schoolName) {
     });
 }
 /**
- * 
+ * Handler for list item click
  * @param {Event} event 
  */
 function handleSchoolListItemClicked(event) {
@@ -81,6 +89,11 @@ function handleSchoolListItemClicked(event) {
     });
 }
 
+/**
+ * 
+ * @param {any[]} schools 
+ * @param {number} currentId 
+ */
 async function populateSchoolList(schools, currentId) {
     const list = document.querySelector("#school-list");
     list.innerHTML = "";
@@ -107,7 +120,9 @@ async function populateSchoolList(schools, currentId) {
 
     
 }
-
+/**
+ * Fetch new data and handle displaying it in the DOM
+ */
 function refreshData() {
     getSchool()
         .then((name) => {
