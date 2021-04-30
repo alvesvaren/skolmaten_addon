@@ -33,25 +33,25 @@ async function populateData(data, schoolName) {
         return;
     }
 
-    if (data.length < 1) {
-        alert("Denna veckan finns inte");
-        if (offset > 0) {
-            offset--;
-        } else if (offset < 0) {
-            offset++;
-        } else {
-            offset = 0;
-        }
-        refreshData();
-        return;
-    }
+    // if (data.length < 1) {
+    //     alert("Denna veckan finns inte");
+    //     if (offset > 0) {
+    //         offset--;
+    //     } else if (offset < 0) {
+    //         offset++;
+    //     } else {
+    //         offset = 0;
+    //     }
+    //     refreshData();
+    //     return;
+    // }
 
-    const sections = document.querySelectorAll("section");
+    const sections = document.querySelectorAll("#menu > section");
     document.querySelector("h1#school-title").textContent = schoolName;
-    const postWeek = new Date(data[0].date).getWeek();
     const currentWeek = new Date().getWeek();
+    const postWeek = new Date((data[0] || {}).date).getWeek() || currentWeek+offset;
     document.querySelector("h2#displayed-week").textContent = `Vecka ${postWeek} ${postWeek == currentWeek ? "(denna veckan)" : ""}`;
-
+    document.querySelector("span#message").textContent = data.length < 1 ? "Meny saknas" : "";
     data.forEach((item, i) => {
         item.date = new Date(item.date);
         sections[i].querySelector("div.data").innerHTML = filterXSS(item.dataHtml);

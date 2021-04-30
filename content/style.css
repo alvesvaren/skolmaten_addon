@@ -3,6 +3,7 @@
     scrollbar-width: thin;
     scrollbar-color: gray transparent;
     user-select: none;
+    box-sizing: border-box;
 }
 
 code {
@@ -17,7 +18,6 @@ body {
     min-height: 128px;
     min-width: 384px;
     margin: 0;
-    box-sizing: border-box;
     color: var(--foreground);
     background-color: var(--background);
 }
@@ -46,7 +46,9 @@ body {
 }
 
 body main {
-    display: grid;
+    display: flex;
+    height: 400px;
+    flex-direction: column;
     grid-template-rows: repeat(7, auto) 35px;
     width: 384px;
     grid-template-areas:
@@ -87,7 +89,7 @@ section {
 }
 
 footer {
-    grid-area: ff;
+    height: 35px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -196,4 +198,8 @@ br {
 #current-school {
     user-select: all;
     word-wrap: break-word;
+}
+
+#menu {
+    overflow-y: scroll;
 }
