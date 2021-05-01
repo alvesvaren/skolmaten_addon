@@ -42,7 +42,7 @@ async function populateData(data, stationName) {
     const postWeek = currentWeek + offset;
     document.querySelector("h2#displayed-week").textContent = `Vecka ${postWeek}${postWeek == currentWeek ? " (denna veckan)" : ""}`;
 
-    const menuElement = document.querySelectorAll("#menu");
+    const menuElement = document.querySelector("#menu");
     menuElement.innerHTML = "";
 
     // document.querySelector("span#message").textContent = data.length < 1 ? "Meny saknas" : "";
@@ -62,11 +62,16 @@ async function populateData(data, stationName) {
         dateDiv.appendChild(dateSpan);
         listItem.appendChild(dateDiv);
         listItem.appendChild(dataDiv);
+        menuElement.appendChild(listItem);
 
         /** @type {string[]} */
         const meals = item.meals;
 
-        dataDiv.textContent = meals.join("\n");
+        meals.forEach((meal) => {
+            const mealSpan = document.createElement("p");
+            mealSpan.textContent = meal;
+            dataDiv.appendChild(mealSpan);
+        });
         daySpan.textContent = weekDays[item.date.getDay() - 1];
         dateSpan.textContent = `${item.date.getFullYear()}-${item.date.getMonth() + 1}-${item.date.getDate()}`;
     });
@@ -90,7 +95,7 @@ async function populateStationList(schools, currentId) {
         schools.push({ name: "Alla resultat visas inte, använd sökfältet", dead: true });
     }
     if (currentId && schools.length <= 0) {
-        schools.push({ name: "Manuellt från sökfältet", district: currentId, id: currentId });
+        schools.push({ name: "Inga skolor hittades", dead: true });
     }
     schools.forEach((school) => {
         const item = document.createElement("li");
