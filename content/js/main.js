@@ -20,6 +20,12 @@ if (browser.theme) {
     });
 }
 
+function getRelativeDate() {
+    const relativeDate = new Date();
+    relativeDate.setDate(relativeDate.getDate() + offset * 7 - relativeDate.getDay() + 1);
+    return relativeDate;
+}
+
 async function setSavedStation(stationId) {
     return browser.storage.sync.set({ stationId: stationId });
 }
@@ -40,17 +46,19 @@ async function populateData(data, stationName) {
     document.querySelector("h1#school-title").textContent = stationName;
 
     const currentWeek = new Date().getWeek();
-    const postWeek = currentWeek + offset;
-    document.querySelector("h2#displayed-week").textContent = `Vecka ${postWeek}${postWeek == currentWeek ? " (denna veckan)" : ""}`;
+    const relativeDate = getRelativeDate();
+    const postWeek = relativeDate.getWeek();
+    var displayedWeek = `Vecka ${postWeek}`;
+    displayedWeek += postWeek == currentWeek ? " (denna veckan)" : "";
+    displayedWeek += relativeDate.getFullYear() != new Date().getFullYear() ? ` (${relativeDate.getFullYear()})` : "";
+
+    document.querySelector("h2#displayed-week").textContent = displayedWeek;
 
     const menuElement = document.querySelector("#menu");
     menuElement.innerHTML = "";
 
-    // document.querySelector("span#message").textContent = data.length < 1 ? "Meny saknas" : "";
     data.forEach((item, i) => {
         const listItem = document.createElement("li");
-        // item.date = new Date(item.date);
-        // sections[i].querySelector("div.data").innerHTML = filterXSS(item.dataHtml);
         const dateDiv = document.createElement("div");
         const dataDiv = document.createElement("div");
         const daySpan = document.createElement("span");
@@ -66,15 +74,20 @@ async function populateData(data, stationName) {
         menuElement.appendChild(listItem);
 
         /** @type {string[]} */
-        const meals = item.meals;
+        const meals = item.meals.length > 0 ? item.meals : ["Meny saknas"];
 
         meals.forEach((meal) => {
             const mealSpan = document.createElement("p");
             mealSpan.textContent = meal;
             dataDiv.appendChild(mealSpan);
         });
+
+        var [year, month, day] = [item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDate()];
+        month = month < 10 ? "0" + month : month;
+        day = day < 10 ? "0" + day : day;
+
         daySpan.textContent = weekDays[item.date.getDay() - 1];
-        dateSpan.textContent = `${item.date.getFullYear()}-${item.date.getMonth() + 1}-${item.date.getDate()}`;
+        dateSpan.textContent = `${year}-${month}-${day}`;
     });
 }
 
@@ -117,11 +130,12 @@ async function refreshData() {
     try {
         const name = await getSavedStation();
         try {
+            const relativeDate = getRelativeDate();
             const message = await browser.runtime.sendMessage({
                 type: "getMenu",
                 id: name,
-                year: new Date().getFullYear(),
-                week: new Date().getWeek() + offset,
+                year: relativeDate.getFullYear(),
+                week: relativeDate.getWeek(),
             });
             if (message && message.length == 2) {
                 const [data, stationName] = message;

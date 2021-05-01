@@ -14,26 +14,21 @@
             <h2 id="displayed-week"></h2>
             <span id="message"></span>
             <ul id="menu">
-                <!-- <section>
-                    <div class="date"></div>
-                    <div class="data"></div>
-                </section>
-                <section>
-                    <div class="date"></div>
-                    <div class="data"></div>
-                </section>
-                <section>
-                    <div class="date"></div>
-                    <div class="data"></div>
-                </section>
-                <section>
-                    <div class="date"></div>
-                    <div class="data"></div>
-                </section>
-                <section>
-                    <div class="date"></div>
-                    <div class="data"></div>
-                </section> -->
+                <!-- 
+                    HTML Example:
+                    <li>
+                        <div class="date">
+                            <span class="weekday">Måndag</span>
+                            <span>2021-4-26</span>
+                        </div>
+                        <div class="data">
+                            <p>Kikärtsgryta serveras med bulgur</p>
+                            <p>Pastagratäng med linser och curry</p>
+                            <p>Mat för avhämtning: Pastagratäng med linser och curry</p>
+                            <p>Mat för avhämtning: Vegetariskt alternativ finns.</p>
+                        </div>
+                    </li>
+                -->
             </ul>
             <footer>
                 <button id="back">Förra veckan</button>
@@ -42,15 +37,14 @@
             </footer>
         </main>
         <div id="school-overlay">
-            <div class="school-overlay-top-bar"><input type="text" placeholder="Sök efter skola eller ange id" id="search-school" /><button id="set-school-done">Klar</button></div>
+            <div class="school-overlay-top-bar">
+                <input type="text" placeholder="Sök efter skola eller ange id" id="search-school" /><button id="set-school-done">Klar</button>
+            </div>
             <ul id="school-list"></ul>
             <div class="current-school-container">Valt skol-id: <code id="current-school"></code></div>
         </div>
         <script src="js/webextension_polyfill.js"></script>
         <!-- https://github.com/mozilla/webextension-polyfill -->
-
-        <script src="js/xss.min.js"></script>
-        <!-- https://github.com/leizongmin/js-xss -->
 
         <script src="js/main.js"></script>
     </body>

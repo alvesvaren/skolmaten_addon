@@ -51,25 +51,10 @@ body main {
     flex-direction: column;
     grid-template-rows: repeat(7, auto) 35px;
     width: 384px;
-    grid-template-areas:
-        "ii"
-        "ww"
-        "t1"
-        "t2"
-        "t3"
-        "t4"
-        "t5"
-        "ff";
 }
 
 main.hidden {
     display: none;
-}
-
-section div.date {
-    display: flex;
-    flex-direction: column;
-    min-width: 60px;
 }
 
 .weekday {
@@ -78,14 +63,6 @@ section div.date {
 
 .weekday {
     font-weight: bold;
-}
-
-section {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    margin: 12px 0;
-    height: min-content;
 }
 
 footer {
@@ -102,6 +79,7 @@ input {
     max-height: 35px;
     color: var(--foreground);
     border-radius: 4px;
+    transition: opacity 200ms;
 }
 
 input,
@@ -120,7 +98,7 @@ input {
     box-sizing: border-box;
     flex-grow: 1;
     text-align: center;
-    border: 2px solid var(--border);
+    border-width: 2px;
 }
 
 button {
@@ -129,6 +107,11 @@ button {
     text-align: center;
     cursor: pointer;
     width: 100%;
+}
+
+button:disabled {
+    opacity: .75;
+    cursor: wait;
 }
 
 br {
@@ -202,4 +185,22 @@ br {
 
 #menu {
     overflow-y: scroll;
+    padding: 0;
+}
+
+#menu li {
+    list-style: none;
+    display: flex;
+    gap: 12px;
+    margin: 12px 0;
+}
+
+#menu .date {
+    display: flex;
+    flex-direction: column;
+    min-width: 68px;
+}
+
+.data p {
+    margin: 0;
 }
