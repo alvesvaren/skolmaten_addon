@@ -95,7 +95,7 @@ async function populateStationList(schools, currentId) {
         schools.push({ name: "Alla resultat visas inte, använd sökfältet", dead: true });
     }
     if (currentId && schools.length <= 0) {
-        schools.push({ name: "Inga skolor hittades", dead: true });
+        schools.push({ name: "Inga skolor matchar din sökning", dead: true });
     }
     schools.forEach((school) => {
         const item = document.createElement("li");
