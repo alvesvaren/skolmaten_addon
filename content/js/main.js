@@ -5,8 +5,8 @@ Date.prototype.getWeek = function () {
     var dayNum = d.getUTCDay() || 7;
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
-}
+    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+};
 
 const weekDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
 var schools = [];
@@ -112,27 +112,31 @@ async function populateStationList(schools, currentId) {
     });
 }
 
-function refreshData() {
-    getSavedStation()
-        .then((name) => {
-            browser.runtime
-                .sendMessage({ type: "getMenu", id: name, year: new Date().getFullYear(), week: new Date().getWeek() + offset })
-                .then((message) => {
-                    if (message && message.length == 2) {
-                        const [data, stationName] = message;
-                        populateData(data, stationName);
-                    }
-                })
-                .catch((errorMsg) => {
-                    console.error(errorMsg);
-                });
+async function refreshData() {
+    document.querySelectorAll("#back, #forward").forEach((e) => e.setAttribute("disabled", ""));
+    try {
+        const name = await getSavedStation();
+        try {
+            const message = await browser.runtime.sendMessage({
+                type: "getMenu",
+                id: name,
+                year: new Date().getFullYear(),
+                week: new Date().getWeek() + offset,
+            });
+            if (message && message.length == 2) {
+                const [data, stationName] = message;
+                populateData(data, stationName);
+            }
             document.querySelector("#current-school").textContent = name;
-        })
-        .catch((errorMsg) => {
-            console.warn(errorMsg);
-            document.querySelector("#current-school").textContent = "ej inställt";
-            document.querySelector("h1#school-title").textContent = "Välj skola";
-        });
+        } catch (error) {
+            console.error(error);
+        }
+    } catch (error) {
+        console.warn(error);
+        document.querySelector("#current-school").textContent = "ej inställt";
+        document.querySelector("h1#school-title").textContent = "Välj skola";
+    }
+    document.querySelectorAll("#back, #forward").forEach((e) => e.removeAttribute("disabled"));
 }
 
 document.querySelector("#back").addEventListener("click", () => {
