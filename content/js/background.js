@@ -31,7 +31,6 @@ async function getMenu(id, year, week) {
             meals[meals.length - 1].meals.push(meal.value);
         }
     }
-    console.log(data);
     return [meals, data.menu.station.name];
 }
 

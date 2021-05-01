@@ -24,7 +24,6 @@ async function setSavedStation(stationId) {
 }
 async function getSavedStation() {
     const stationId = (await browser.storage.sync.get("stationId")).stationId;
-    console.log(stationId);
     if (!stationId) {
         throw new Error("No station was set");
     }
@@ -32,12 +31,12 @@ async function getSavedStation() {
     return stationId;
 }
 
-async function populateData(data, stationId) {
-    if (!data || !stationId) {
+async function populateData(data, stationName) {
+    if (!data || !stationName) {
         return;
     }
 
-    document.querySelector("h1#school-title").textContent = stationId;
+    document.querySelector("h1#school-title").textContent = stationName;
 
     const currentWeek = new Date().getWeek();
     const postWeek = currentWeek + offset;
@@ -114,8 +113,8 @@ function refreshData() {
                 .sendMessage({ type: "getMenu", id: name, year: new Date().getFullYear(), week: new Date().getWeek() + offset })
                 .then((message) => {
                     if (message && message.length == 2) {
-                        const [data, schoolName] = message;
-                        populateData(data, schoolName);
+                        const [data, stationName] = message;
+                        populateData(data, stationName);
                     }
                 })
                 .catch((errorMsg) => {
