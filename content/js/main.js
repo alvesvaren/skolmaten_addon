@@ -19,100 +19,99 @@ if (browser.theme) {
     });
 }
 
-async function setSchool(name) {
-    return browser.storage.sync.set({ schoolName: name });
+async function setSavedStation(stationId) {
+    return browser.storage.sync.set({ stationId: stationId });
 }
-async function getSchool() {
-    const schoolName = (await browser.storage.sync.get("schoolName")).schoolName;
-    if (schoolName) return schoolName;
-    return Promise.reject("School name was not stored");
+async function getSavedStation() {
+    const stationId = (await browser.storage.sync.get("stationId")).stationId;
+    console.log(stationId);
+    if (!stationId) {
+        throw new Error("No station was set");
+    }
+
+    return stationId;
 }
 
-async function populateData(data, schoolName) {
-    if (!data || !schoolName) {
+async function populateData(data, stationId) {
+    if (!data || !stationId) {
         return;
     }
 
-    // if (data.length < 1) {
-    //     alert("Denna veckan finns inte");
-    //     if (offset > 0) {
-    //         offset--;
-    //     } else if (offset < 0) {
-    //         offset++;
-    //     } else {
-    //         offset = 0;
-    //     }
-    //     refreshData();
-    //     return;
-    // }
+    document.querySelector("h1#school-title").textContent = stationId;
 
-    const sections = document.querySelectorAll("#menu > section");
-    document.querySelector("h1#school-title").textContent = schoolName;
     const currentWeek = new Date().getWeek();
-    const postWeek = new Date((data[0] || {}).date).getWeek() || currentWeek+offset;
-    document.querySelector("h2#displayed-week").textContent = `Vecka ${postWeek} ${postWeek == currentWeek ? "(denna veckan)" : ""}`;
-    document.querySelector("span#message").textContent = data.length < 1 ? "Meny saknas" : "";
+    const postWeek = currentWeek + offset;
+    document.querySelector("h2#displayed-week").textContent = `Vecka ${postWeek}${postWeek == currentWeek ? " (denna veckan)" : ""}`;
+
+    const menuElement = document.querySelectorAll("#menu");
+    menuElement.innerHTML = "";
+
+    // document.querySelector("span#message").textContent = data.length < 1 ? "Meny saknas" : "";
     data.forEach((item, i) => {
-        item.date = new Date(item.date);
-        sections[i].querySelector("div.data").innerHTML = filterXSS(item.dataHtml);
-        const dateDiv = sections[i].querySelector("div.date");
-        dateDiv.innerHTML = "";
-
+        const listItem = document.createElement("li");
+        // item.date = new Date(item.date);
+        // sections[i].querySelector("div.data").innerHTML = filterXSS(item.dataHtml);
+        const dateDiv = document.createElement("div");
+        const dataDiv = document.createElement("div");
         const daySpan = document.createElement("span");
-        daySpan.textContent = weekDays[item.date.getDay() - 1];
-        daySpan.classList.add("weekday");
-
         const dateSpan = document.createElement("span");
-        dateSpan.textContent = `${item.date.getFullYear()}-${item.date.getMonth() + 1}-${item.date.getDate()}`;
+        dateDiv.classList.add("date");
+        dataDiv.classList.add("data");
+        daySpan.classList.add("weekday");
 
         dateDiv.appendChild(daySpan);
         dateDiv.appendChild(dateSpan);
+        listItem.appendChild(dateDiv);
+        listItem.appendChild(dataDiv);
+
+        /** @type {string[]} */
+        const meals = item.meals;
+
+        dataDiv.textContent = meals.join("\n");
+        daySpan.textContent = weekDays[item.date.getDay() - 1];
+        dateSpan.textContent = `${item.date.getFullYear()}-${item.date.getMonth() + 1}-${item.date.getDate()}`;
     });
 }
-/**
- * 
- * @param {Event} event 
- */
-function handleSchoolListItemClicked(event) {
+
+/** @param {Event} event */
+function handleStationListItemClicked(event) {
     const id = event.target.getAttribute("data-id");
-    setSchool(id).then(() => {
+    setSavedStation(id).then(() => {
         document.querySelector("#current-school").textContent = id;
         refreshData();
     });
 }
 
-async function populateSchoolList(schools, currentId) {
+async function populateStationList(schools, currentId) {
     const list = document.querySelector("#school-list");
     list.innerHTML = "";
-    schools = schools.slice()
+    schools = schools.slice();
     if (schools.length > 50) {
         schools = schools.slice(0, 50);
-        schools.push({name: "Alla resultat visas inte, använd sökfältet", dead: true});
+        schools.push({ name: "Alla resultat visas inte, använd sökfältet", dead: true });
     }
     if (currentId && schools.length <= 0) {
-        schools.push({name: "Manuellt från sökfältet", district: currentId, id: currentId});
+        schools.push({ name: "Manuellt från sökfältet", district: currentId, id: currentId });
     }
     schools.forEach((school) => {
         const item = document.createElement("li");
         if (school.dead) {
-            item.textContent = `${school.name}`
+            item.textContent = `${school.name}`;
             item.classList.add("dead");
         } else {
-            item.textContent = `${school.name} (${school.district})`;
+            item.textContent = `${school.name} (${school.collection})`;
             item.setAttribute("data-id", school.id);
-            item.addEventListener("click", handleSchoolListItemClicked);
+            item.addEventListener("click", handleStationListItemClicked);
         }
         list.appendChild(item);
     });
-
-    
 }
 
 function refreshData() {
-    getSchool()
+    getSavedStation()
         .then((name) => {
             browser.runtime
-                .sendMessage({ type: "getData", schoolId: name, offset: offset })
+                .sendMessage({ type: "getMenu", id: name, year: new Date().getFullYear(), week: new Date().getWeek() + offset })
                 .then((message) => {
                     if (message && message.length == 2) {
                         const [data, schoolName] = message;
@@ -120,7 +119,7 @@ function refreshData() {
                     }
                 })
                 .catch((errorMsg) => {
-                    alert(errorMsg);
+                    console.error(errorMsg);
                 });
             document.querySelector("#current-school").textContent = name;
         })
@@ -145,10 +144,10 @@ document.querySelector("#set-school").addEventListener("click", (event) => {
     document.querySelector("main").classList.add("hidden");
 
     if (schools.length <= 0) {
-        browser.runtime.sendMessage({ type: "getSchools" }).then((message) => {
+        browser.runtime.sendMessage({ type: "getStations" }).then((message) => {
             schools = message;
             document.querySelector("input#search-school").value = "";
-            populateSchoolList(schools);
+            populateStationList(schools);
         });
     }
 });
@@ -158,8 +157,15 @@ document.querySelector("#set-school-done").addEventListener("click", (event) => 
     document.querySelector("main").classList.remove("hidden");
 });
 
-document.querySelector("input#search-school").addEventListener("input", (event) => {
-    populateSchoolList(schools.filter((school) => (school.name + school.id).toLowerCase().includes(event.target.value)), event.target.value);
-}, {capture: false});
+document.querySelector("input#search-school").addEventListener(
+    "input",
+    (event) => {
+        populateStationList(
+            schools.filter((school) => (school.name + school.id).toLowerCase().includes(event.target.value)),
+            event.target.value
+        );
+    },
+    { capture: false }
+);
 
 refreshData();
