@@ -26,6 +26,8 @@ function getRelativeDate() {
     return relativeDate;
 }
 
+/** Save the station to extension storage
+ * @param {number} stationId */
 async function setSavedStation(stationId) {
     return browser.storage.sync.set({ stationId: stationId });
 }
@@ -38,6 +40,9 @@ async function getSavedStation() {
     return stationId;
 }
 
+/** Fill the DOM with the relevant data
+ * @param {any[]} data 
+ * @param {string} stationName */
 async function populateData(data, stationName) {
     if (!data || !stationName) {
         return;
@@ -100,18 +105,21 @@ function handleStationListItemClicked(event) {
     });
 }
 
-async function populateStationList(schools, currentId) {
+/** Populate the station list with the provided stations
+ * @param {any[]} stations 
+ * @param {number} currentId */
+async function populateStationList(stations, currentId) {
     const list = document.querySelector("#school-list");
     list.innerHTML = "";
-    schools = schools.slice();
-    if (schools.length > 50) {
-        schools = schools.slice(0, 50);
-        schools.push({ name: "Alla resultat visas inte, använd sökfältet", dead: true });
+    stations = stations.slice();
+    if (stations.length > 50) {
+        stations = stations.slice(0, 50);
+        stations.push({ name: "Alla resultat visas inte, använd sökfältet", dead: true });
     }
-    if (currentId && schools.length <= 0) {
-        schools.push({ name: "Inga skolor matchar din sökning", dead: true });
+    if (currentId && stations.length <= 0) {
+        stations.push({ name: "Inga skolor matchar din sökning", dead: true });
     }
-    schools.forEach((school) => {
+    stations.forEach((school) => {
         const item = document.createElement("li");
         if (school.dead) {
             item.textContent = `${school.name}`;
@@ -125,6 +133,7 @@ async function populateStationList(schools, currentId) {
     });
 }
 
+/** Fetch new data and handle displaying it in the DOM */
 async function refreshData() {
     document.querySelectorAll("#back, #forward").forEach((e) => e.setAttribute("disabled", ""));
     try {
