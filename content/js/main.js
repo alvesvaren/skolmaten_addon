@@ -143,6 +143,7 @@ async function refreshData() {
             }
             document.querySelector("#current-school").textContent = name;
         } catch (error) {
+            alert(error);
             console.error(error);
         }
     } catch (error) {
