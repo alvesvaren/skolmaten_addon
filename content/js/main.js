@@ -81,7 +81,7 @@ async function populateData(data, stationName) {
             mealSpan.textContent = meal;
             dataDiv.appendChild(mealSpan);
         });
-
+        item.date = new Date(item.date);
         var [year, month, day] = [item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDate()];
         month = month < 10 ? "0" + month : month;
         day = day < 10 ? "0" + day : day;

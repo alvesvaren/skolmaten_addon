@@ -1,4 +1,10 @@
 const entrypoint = "https://skolmaten.se/api/4/";
+const headers = {
+    "client-token": "lzsjjh3l5o4pnz265tqy",
+    "client-version-token": "p1ksed0ntpvhqd54ktzn",
+    "api-version": "4.0",
+    locale: "sv_SE",
+};
 
 /** Get menu for a school
  * @param {number} id The school id
@@ -8,12 +14,7 @@ const entrypoint = "https://skolmaten.se/api/4/";
 async function getMenu(id, year, week) {
     const url = entrypoint + `menu/?station=${id}&year=${year}&weekOfYear=${week}&count=1`;
     const response = await fetch(url, {
-        headers: {
-            "client-token": "lzsjjh3l5o4pnz265tqy",
-            "client-version-token": "p1ksed0ntpvhqd54ktzn",
-            "api-version": "4.0",
-            locale: "sv_SE",
-        },
+        headers: headers,
     });
 
     if (!response.ok) {
@@ -25,7 +26,8 @@ async function getMenu(id, year, week) {
     const meals = [];
 
     for (const item of data.menu.weeks[0].days) {
-        const date = new Date(item.year, item.month - 1, item.day);
+        // Google chrome does not allow sending Date objects with browser messaging api
+        const date = (new Date(item.year, item.month - 1, item.day)).toDateString();
         meals.push({ date: date, meals: [] });
         for (var meal of item.meals || []) {
             meals[meals.length - 1].meals.push(meal.value);
@@ -37,12 +39,7 @@ async function getMenu(id, year, week) {
 async function getStations() {
     const url = entrypoint + "stations/index/";
     const response = await fetch(url, {
-        headers: {
-            "client-token": "lzsjjh3l5o4pnz265tqy",
-            "client-version-token": "p1ksed0ntpvhqd54ktzn",
-            "api-version": "4.0",
-            locale: "sv_SE",
-        },
+        headers: headers,
     });
 
     if (!response.ok) {
