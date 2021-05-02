@@ -27,7 +27,7 @@ async function getMenu(id, year, week) {
 
     for (const item of data.menu.weeks[0].days) {
         // Google chrome does not allow sending Date objects with browser messaging api
-        const date = (new Date(item.year, item.month - 1, item.day)).toDateString();
+        const date = new Date(item.year, item.month - 1, item.day).toDateString();
         meals.push({ date: date, meals: [] });
         for (var meal of item.meals || []) {
             meals[meals.length - 1].meals.push(meal.value);
