@@ -40,8 +40,21 @@ async function getSavedStation() {
     return stationId;
 }
 
+function openSetStation() {
+    document.querySelector("#school-overlay").classList.add("visible");
+    document.querySelector("main").classList.add("hidden");
+
+    if (schools.length <= 0) {
+        browser.runtime.sendMessage({ type: "getStations" }).then((message) => {
+            schools = message;
+            document.querySelector("input#search-school").value = "";
+            populateStationList(schools);
+        });
+    }
+}
+
 /** Fill the DOM with the relevant data
- * @param {any[]} data 
+ * @param {any[]} data
  * @param {string} stationName */
 async function populateData(data, stationName) {
     if (!data || !stationName) {
@@ -106,7 +119,7 @@ function handleStationListItemClicked(event) {
 }
 
 /** Populate the station list with the provided stations
- * @param {any[]} stations 
+ * @param {any[]} stations
  * @param {number} currentId */
 async function populateStationList(stations, currentId) {
     const list = document.querySelector("#school-list");
@@ -159,6 +172,8 @@ async function refreshData() {
         console.warn(error);
         document.querySelector("#current-school").textContent = "ej inställt";
         document.querySelector("h1#school-title").textContent = "Välj skola";
+        document.querySelector("h2#displayed-week").textContent = 'Klicka på knappen "Välj skola" för att välja skola';
+        openSetStation();
     }
     document.querySelectorAll("#back, #forward").forEach((e) => e.removeAttribute("disabled"));
 }
@@ -172,20 +187,11 @@ document.querySelector("#forward").addEventListener("click", () => {
     refreshData();
 });
 
-document.querySelector("#set-school").addEventListener("click", (event) => {
-    document.querySelector("#school-overlay").classList.add("visible");
-    document.querySelector("main").classList.add("hidden");
-
-    if (schools.length <= 0) {
-        browser.runtime.sendMessage({ type: "getStations" }).then((message) => {
-            schools = message;
-            document.querySelector("input#search-school").value = "";
-            populateStationList(schools);
-        });
-    }
+document.querySelector("#set-school").addEventListener("click", () => {
+    openSetStation();
 });
 
-document.querySelector("#set-school-done").addEventListener("click", (event) => {
+document.querySelector("#set-school-done").addEventListener("click", () => {
     document.querySelector("#school-overlay").classList.remove("visible");
     document.querySelector("main").classList.remove("hidden");
 });
@@ -193,7 +199,7 @@ document.querySelector("#set-school-done").addEventListener("click", (event) => 
 document.querySelector("input#search-school").addEventListener(
     "input",
     (event) => {
-		const query = event.target.value.toLowerCase();
+        const query = event.target.value.toLowerCase();
         populateStationList(
             schools.filter((school) => (school.name + school.id).toLowerCase().includes(query)),
             query
