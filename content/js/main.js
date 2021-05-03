@@ -193,9 +193,10 @@ document.querySelector("#set-school-done").addEventListener("click", (event) => 
 document.querySelector("input#search-school").addEventListener(
     "input",
     (event) => {
+		const query = event.target.value.toLowerCase();
         populateStationList(
-            schools.filter((school) => (school.name + school.id).toLowerCase().includes(event.target.value)),
-            event.target.value
+            schools.filter((school) => (school.name + school.id).toLowerCase().includes(query)),
+            query
         );
     },
     { capture: false }
