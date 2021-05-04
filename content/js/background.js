@@ -1,7 +1,7 @@
 const entrypoint = "https://skolmaten.se/api/4/";
 const headers = {
-    "client-token": "lzsjjh3l5o4pnz265tqy",
-    "client-version-token": "p1ksed0ntpvhqd54ktzn",
+    "client-token": "kiav1d2b2w40bvbfvjmy",
+    "client-version-token": "pdmg5d4tkgq4muilc0t3",
     "api-version": "4.0",
     locale: "sv_SE",
 };
