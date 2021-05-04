@@ -1,54 +1,69 @@
-const domParser = new DOMParser();
+const entrypoint = "https://skolmaten.se/api/4/";
+const headers = {
+    "client-token": "kiav1d2b2w40bvbfvjmy",
+    "client-version-token": "pdmg5d4tkgq4muilc0t3",
+    "api-version": "4.0",
+    locale: "sv_SE",
+};
 
-async function getData(schoolId, offset) {
-    var schoolName = "Skola";
-    if (!schoolId || schoolId == "") {
-        return Promise.reject("Error: Det angivna idt är ogiltligt");
+/** Get menu for a school
+ * @param {number} id The school id
+ * @param {number} year The requested year
+ * @param {number} week The requested week
+ * @returns A list of id for each day, with the corresponding dates */
+async function getMenu(id, year, week) {
+    const url = entrypoint + `menu/?station=${id}&year=${year}&weekOfYear=${week}&count=1`;
+    const response = await fetch(url, {
+        headers: headers,
+    });
+
+    if (!response.ok) {
+        throw new Error(response.status + ": " + response.statusText);
     }
 
-    const url = `https://skolmaten.se/${schoolId.toLowerCase()}/rss/weeks/?offset=${offset || 0}`;
-    const response = await fetch(url);
+    const data = await response.json();
 
-    if (response.status >= 300 || response.status < 200) {
-        return Promise.reject("Error " + response.status + ": " + response.statusText);
+    const meals = [];
+
+    for (const item of data.menu.weeks[0].days) {
+        // Google chrome does not allow sending Date objects with browser messaging api
+        const date = new Date(item.year, item.month - 1, item.day).toDateString();
+        meals.push({ date: date, meals: [] });
+        for (var meal of item.meals || []) {
+            meals[meals.length - 1].meals.push(meal.value);
+        }
     }
-
-    const dom = domParser.parseFromString(await response.text(), "text/xml");
-
-    schoolName = dom.querySelector("rss > channel > title").textContent || schoolName;
-    return [
-        Array.from(dom.querySelectorAll("rss item")).map((item) => {
-            return { dataHtml: item.querySelector("description").textContent, date: item.querySelector("pubDate").textContent };
-        }),
-        schoolName,
-    ];
+    return [meals, data.menu.station.name];
 }
 
-async function getSchools() {
-    const url = "https://skolmaten.se/?fmt=json";
-    const response = await fetch(url);
-    if (response.status >= 300 || response.status < 200) {
-        return Promise.reject("Error " + response.status + ": " + response.statusText);
+async function getStations() {
+    const url = entrypoint + "stations/index/";
+    const response = await fetch(url, {
+        headers: headers,
+    });
+
+    if (!response.ok) {
+        throw new Error(response.status + ": " + response.statusText);
     }
 
     const json = await response.json();
-    const schoolList = [];
-    for (const province of json.provinces) {
-        for (const district of province.districts) {
-            for (const school of district.schools) {
-                schoolList.push({ id: school.url.slice(1,-1), name: school.name, district: district.name });
-            }
+    const stationList = [];
+    for (const collection of json) {
+        for (const station of collection.s) {
+            stationList.push({ id: station.i, name: station.n, collection: collection.n });
         }
     }
-    return schoolList.sort((a,b) => a.name > b.name ? 1 : -1);
+
+    // This is probably pretty slow hehe
+    return stationList.sort((a, b) => (a.name > b.name ? 1 : -1));
 }
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === "getData") {
-        return getData(message.schoolId, message.offset);
-    } else if (message.type === "getSchools") {
-        return getSchools();
+    if (message.type === "getMenu") {
+        return getMenu(message.id, message.year, message.week);
+    } else if (message.type === "getStations") {
+        return getStations();
     }
 
-    return Promise.reject();
+    throw new Error("unknown browser runtime message");
 });
