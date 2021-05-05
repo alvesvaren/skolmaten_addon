@@ -106,6 +106,7 @@ input {
     flex: 1 0 auto;
     box-sizing: border-box;
     border-width: 2px;
+    user-select: auto;
 }
 
 button {
@@ -208,5 +209,6 @@ br {
 }
 
 .data p {
+    user-select: text;
     margin: 0;
 }
