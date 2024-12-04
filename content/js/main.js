@@ -12,8 +12,8 @@ const weekDays = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag",
 var schools = [];
 var offset = 0;
 
-if (chrome.theme) {
-    chrome.theme.getCurrent().then((theme) => {
+if (browser.theme) {
+    browser.theme.getCurrent().then((theme) => {
         document.body.style.setProperty("--foreground", theme.colors.popup_text || "unset");
         document.body.style.setProperty("--background", theme.colors.popup || "unset");
         document.body.style.setProperty("--border", theme.colors.popup_border || "unset");
@@ -29,10 +29,10 @@ function getRelativeDate() {
 /** Save the station to extension storage
  * @param {number} stationId */
 async function setSavedStation(stationId) {
-    return chrome.storage.sync.set({ stationId: stationId });
+    return browser.storage.sync.set({ stationId: stationId });
 }
 async function getSavedStation() {
-    const stationId = (await chrome.storage.sync.get("stationId")).stationId;
+    const stationId = (await browser.storage.sync.get("stationId")).stationId;
     if (!stationId) {
         throw new Error("No station was set");
     }
@@ -45,7 +45,8 @@ function openSetStation() {
     document.querySelector("main").classList.add("hidden");
 
     if (schools.length <= 0) {
-        chrome.runtime.sendMessage({ type: "getStations" }).then((message) => {
+        browser.runtime.sendMessage({ type: "getStations" }).then((message) => {
+            console.log("M;esasveg", message)
             schools = message;
             document.querySelector("input#search-school").value = "";
             populateStationList(schools);
@@ -153,7 +154,7 @@ async function refreshData() {
         const name = await getSavedStation();
         try {
             const relativeDate = getRelativeDate();
-            const message = await chrome.runtime.sendMessage({
+            const message = await browser.runtime.sendMessage({
                 type: "getMenu",
                 id: name,
                 year: relativeDate.getFullYear(),

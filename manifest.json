@@ -29,5 +29,5 @@
   },
 
   "permissions": ["storage"],
-  "host_permissions": ["https://*.skolmaten.se/*"]
+  "host_permissions": ["https://skolmaten.se/*"]
 }
