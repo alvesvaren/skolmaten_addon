@@ -18,7 +18,8 @@
   },
 
   "background": {
-    "service_worker": "content/js/background.js"
+    "service_worker": "content/js/background.js",
+    "scripts": ["content/js/background.js"]
   },
 
   "browser_specific_settings": {
