@@ -58,7 +58,7 @@ async function getStations() {
     return stationList.sort((a, b) => (a.name > b.name ? 1 : -1));
 }
 
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "getMenu") {
         return getMenu(message.id, message.year, message.week);
     } else if (message.type === "getStations") {
