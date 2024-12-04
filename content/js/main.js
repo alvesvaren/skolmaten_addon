@@ -46,7 +46,6 @@ function openSetStation() {
 
     if (schools.length <= 0) {
         browser.runtime.sendMessage({ type: "getStations" }).then((message) => {
-            console.log("M;esasveg", message)
             schools = message;
             document.querySelector("input#search-school").value = "";
             populateStationList(schools);
