@@ -1,3 +1,8 @@
+
+if (typeof importScripts === 'function') {
+    importScripts("./webextension_polyfill.js");
+}
+
 const entrypoint = "https://skolmaten.se/api/4/";
 const headers = {
     "client-token": "kiav1d2b2w40bvbfvjmy",
