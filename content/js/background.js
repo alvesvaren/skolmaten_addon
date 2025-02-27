@@ -5,8 +5,9 @@ if (typeof importScripts === 'function') {
 
 const entrypoint = "https://skolmaten.se/api/4/";
 const headers = {
-    "client-token": "kiav1d2b2w40bvbfvjmy",
-    "client-version-token": "pdmg5d4tkgq4muilc0t3",
+    // These are public tokens from the mobile app
+    "client-token": "lzsjjh3l5o4pnz265tqy",
+    "client-version-token": "p1ksed0ntpvhqd54ktzn",
     "api-version": "4.0",
     locale: "sv_SE",
 };
@@ -17,7 +18,7 @@ const headers = {
  * @param {number} week The requested week
  * @returns A list of id for each day, with the corresponding dates */
 async function getMenu(id, year, week) {
-    const url = entrypoint + `menu/?station=${id}&year=${year}&weekOfYear=${week}&count=1`;
+    const url = entrypoint + `menu/?station=${id}&year=${year}&weekOfYear=${week}&count=1&attributes=false`;
     const response = await fetch(url, {
         headers: headers,
     });
