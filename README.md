@@ -5,9 +5,9 @@ Ett chrome och firefox tillägg som visar skolmaten från skolmaten.se direkt i 
 ![Mozilla Add-on](https://img.shields.io/amo/stars/skolmaten?label=FIREFOX&style=for-the-badge)
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/ejapgcaikpopdmigljfpjcdkpdidgdpk?label=CHROME&style=for-the-badge)
 
-[Lägg till i Firefox](https://addons.mozilla.org/en-US/firefox/addon/skolmaten) (version 4.7 just nu, väntar med 5.X tills manifest v3 är rekommenderat)
+[Lägg till i Firefox](https://addons.mozilla.org/en-US/firefox/addon/skolmaten) (version 4.7 just nu)
 
-[Lägg till i Chrome](https://chrome.google.com/webstore/detail/ejapgcaikpopdmigljfpjcdkpdidgdpk) (version 5.1 just nu)
+[Lägg till i Chrome](https://chrome.google.com/webstore/detail/ejapgcaikpopdmigljfpjcdkpdidgdpk) (version 5.2 just nu)
 
 [comment]: <> (Eftersom att review-processen i chrome för addons är väldigt mycket långsammare än mozillas så kan chrome-versionen vara något äldre än firefox)
 
