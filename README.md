@@ -4,6 +4,8 @@ Ett chrome och firefox tillägg som visar skolmaten från skolmaten.se direkt i 
 ## Betyg
 ![Mozilla Add-on](https://img.shields.io/amo/stars/skolmaten?label=FIREFOX&style=for-the-badge)
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/ejapgcaikpopdmigljfpjcdkpdidgdpk?label=CHROME&style=for-the-badge)
+![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/ejapgcaikpopdmigljfpjcdkpdidgdpk?style=for-the-badge&logo=googlechrome&logoColor=white)
+
 
 [Lägg till i Firefox](https://addons.mozilla.org/en-US/firefox/addon/skolmaten) (version 5.2 just nu)
 
